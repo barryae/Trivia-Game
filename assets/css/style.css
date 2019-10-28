@@ -1,0 +1,21 @@
+header {
+    text-align: center;
+    padding: 2rem 0rem 6rem 0rem;
+
+}
+
+.question {
+    padding:1rem
+}
+
+.answers {
+    text-align: center;
+}
+
+.custom-control-inline {
+    margin: 0px;
+}
+
+.custom-radio {
+    padding: 1rem;
+}
