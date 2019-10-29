@@ -1,23 +1,56 @@
 const questions = [
     {
-        question: 'How many wheels on a car?',
+        question: 'How many wheels are on a car?',
         answerA: '2',
         answerB: '4',
         answerC: '6',
         answerD: '8',
         correct: 'answerB'
     },
+    {
+        question: 'What is the boiling point of water in Celsius?',
+        answerA: '212',
+        answerB: '100',
+        answerC: '0',
+        answerD: '32',
+        correct: 'answerB'
+    },
+    {
+        question: 'What kind of plant is a tomato?',
+        answerA: 'berry',
+        answerB: 'legume',
+        answerC: 'melon',
+        answerD: 'grain',
+        correct: 'answerA'
+    },
+    {
+        question: 'What is the name of the galaxy closest to ours?',
+        answerA: 'Andromeda',
+        answerB: 'Beetlegeuse',
+        answerC: 'Sirius',
+        answerD: 'Aldebaran',
+        correct: 'answerA'
+    },
+    {
+        question: 'How many chromosomal pairs exist in human DNA?',
+        answerA: '23',
+        answerB: '26',
+        answerC: '46',
+        answerD: '9',
+        correct: 'answerA'
+    },
 ]
 
 let questionBox = document.getElementsByClassName('questionBox')[0];
 
 function main() {
-    renderQuestion();
-
+    createStartScreen()
+    $('#start').click(startGame)
+    $('#submit').click(evaluateAnswer)
 }
 
-function renderQuestion() {
-    createQuestion(questions[0])
+function startGame() {
+
 }
 
 function createQuestion(question) {
@@ -59,8 +92,7 @@ function createQuestion(question) {
                             <input type="radio" id="answerD" name="answer" class="custom-control-input">
                             <label class="custom-control-label" for="answerD">${question.answerD}</label>
                         </div>
-                        <button type="button" class="btn btn-primary btn-lg">Submit</button>
-                        <button type="button" class="btn btn-secondary btn-lg">Pass</button>
+                        <button type="button" id='submit' class="btn btn-primary btn-lg submit">Submit</button>
                     </div>
                     <div class="col-4"></div>
                 </div>
@@ -68,6 +100,29 @@ function createQuestion(question) {
 
     questionBox.innerHTML = '';
     questionBox.appendChild(questionCard);
+}
+
+function createStartScreen() {
+    let startCard = document.createElement("div");
+    startCard.innerHTML =
+        `<div class="row question">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    <h3>
+                        Instructions:
+                    </h3>
+                    <p>
+                        You will have 15 seconds to answer each question!
+                        If you do not answer in the time allotted, you lose!
+                    </p>
+                    <button type="button" id='start' class="btn btn-primary btn-lg start">Start</button>
+                </div>
+                <div class="col-3"></div>
+            </div>`
+        ;
+
+    questionBox.innerHTML = '';
+    questionBox.appendChild(startCard);
 }
 
 main();
