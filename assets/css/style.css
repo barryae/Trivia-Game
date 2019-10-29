@@ -19,3 +19,11 @@ header {
 .custom-radio {
     padding: 1rem;
 }
+
+.row {
+    text-align: center;
+}
+
+.score {
+    padding: 1rem;
+}
