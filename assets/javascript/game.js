@@ -6,6 +6,7 @@ let score = 0
 let interval
 let userAnswer = ''
 
+//Starts game, gets questions from Trivia DB
 function main() {
     $.ajax({
         url: 'https://opentdb.com/api.php?amount=15&type=multiple&category=9',
@@ -18,7 +19,6 @@ function main() {
             answers.push(response.results[i].incorrect_answers[1]);
             answers.push(response.results[i].incorrect_answers[2]);
             shuffle(answers)
-            console.log(answers)
             questions.push(
                 {
                     question: `${response.results[i].question}`,
@@ -34,6 +34,7 @@ function main() {
     $('#start').click(startGame);
 }
 
+//Shuffles answer choices for each question
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -41,13 +42,15 @@ function shuffle(array) {
     }
 }
 
+//Logs answered questions, determines if game is over or if game 
+//needs to start
 function startGame() {
     clearInterval(interval);
     n = Math.floor(Math.random() * questions.length)
     if (!answeredQuestions.includes(n)) {
         console.log(n);
         answeredQuestions.push(n)
-        createQuestion(questions[n]);
+        renderQuestion(questions[n]);
         $('#submit').click(evaluateAnswer);
         interval = setTimeout(evaluateAnswer, 10000);
     } else if (questions.length === answeredQuestions.length) {
@@ -57,19 +60,19 @@ function startGame() {
     }
 }
 
-function createQuestion(question) {
+//Accesses questions and fills in HTML template with respective values
+function renderQuestion(question) {
     let questionCard = document.createElement("div");
     questionCard.innerHTML =
         `<div class="row question">
-                <div class="col-2"></div>
-                <div class="col-8">
+                <div class="col-1"></div>
+                <div class="col-10">
                     <p>
                         ${question.question}
                     </p>
                 </div>
-                <div class="col-2"></div>
+                <div class="col-1"></div>
             </div>
-
             <div class="answers">
                 <div class="row">
                     <div class="col-3"></div>
@@ -116,12 +119,13 @@ function createQuestion(question) {
     questionBox.appendChild(questionCard);
 }
 
+//Renders start screen
 function createStartScreen() {
     let startCard = document.createElement("div");
     startCard.innerHTML =
         `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3>
                         Instructions:
                     </h3>
@@ -132,13 +136,14 @@ function createStartScreen() {
                     </p>
                     <button type="button" id='start' class="btn btn-primary btn-lg start">Start</button>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
         ;
     questionBox.innerHTML = '';
     questionBox.appendChild(startCard);
 }
 
+//Evaluates answer as correct or wrong
 function evaluateAnswer() {
     clearInterval(interval);
     interval = setTimeout(startGame, 5000);
@@ -151,6 +156,7 @@ function evaluateAnswer() {
     }
 }
 
+//Renders correct answer page, adds 1 to score
 function correctAnswer() {
     console.log('correct');
     score += 1
@@ -158,8 +164,8 @@ function correctAnswer() {
     if (questions.length === answeredQuestions.length) {
         correctCard.innerHTML =
             `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3>
                         Correct Answer!
                     </h3>
@@ -167,13 +173,13 @@ function correctAnswer() {
                         Let's see how you did!
                     </p>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
     } else {
         correctCard.innerHTML =
             `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3>
                         Correct Answer!
                     </h3>
@@ -181,23 +187,24 @@ function correctAnswer() {
                         Prepare yourself for the next question!
                     </p>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
     }
     questionBox.innerHTML = '';
     questionBox.appendChild(correctCard);
 }
 
+//Renders wrong answer page
 function wrongAnswer() {
     console.log('wrong');
     let wrongCard = document.createElement("div");
     if (questions.length === answeredQuestions.length) {
         wrongCard.innerHTML =
             `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3>
-                        Wrong Answer :(
+                        Wrong Answer
                     </h3>
                     <p>
                         The correct answer was <strong>${questions[n].correct}</strong>.
@@ -206,15 +213,15 @@ function wrongAnswer() {
                         Let's see how you did!
                     </p>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
     } else {
         wrongCard.innerHTML =
             `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3>
-                        Wrong Answer :(
+                        Wrong Answer
                     </h3>
                     <p>
                     The correct answer was <strong>${questions[n].correct}</strong>.
@@ -223,26 +230,27 @@ function wrongAnswer() {
                         Get ready for your next try!
                     </p>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
     }
     questionBox.innerHTML = '';
     questionBox.appendChild(wrongCard);
 }
 
+//Renders score page with score and try again button
 function scorePage() {
     console.log('score');
     let scoreCard = document.createElement("div");
     scoreCard.innerHTML =
         `<div class="row question">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-2"></div>
+                <div class="col-8">
                     <h3 class='score'>
-                        Score: ${score}
+                        Score: ${score} of 15 correct.
                     </h3>
                     <button type="button" id='score' class="btn btn-primary btn-lg start">Play Again?</button>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-2"></div>
             </div>`
         ;
     questionBox.innerHTML = '';
@@ -252,4 +260,5 @@ function scorePage() {
     })
 }
 
+//Starts game
 main();
