@@ -27,3 +27,7 @@ header {
 .score {
     padding: 1rem;
 }
+
+p {
+    font-size: 1.25rem;
+}

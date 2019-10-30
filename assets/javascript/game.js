@@ -1,54 +1,44 @@
-const questions = [
-    {
-        question: 'How many wheels are on a car?',
-        answerA: '2',
-        answerB: '4',
-        answerC: '6',
-        answerD: '8',
-        correct: 'answerB'
-    },
-    {
-        question: 'What is the boiling point of water in Celsius?',
-        answerA: '212',
-        answerB: '100',
-        answerC: '0',
-        answerD: '32',
-        correct: 'answerB'
-    },
-    {
-        question: 'What kind of plant is a tomato?',
-        answerA: 'berry',
-        answerB: 'legume',
-        answerC: 'melon',
-        answerD: 'grain',
-        correct: 'answerA'
-    },
-    {
-        question: 'What is the name of the galaxy closest to ours?',
-        answerA: 'Andromeda',
-        answerB: 'Beetlegeuse',
-        answerC: 'Sirius',
-        answerD: 'Aldebaran',
-        correct: 'answerA'
-    },
-    {
-        question: 'How many chromosomal pairs exist in human DNA?',
-        answerA: '23',
-        answerB: '26',
-        answerC: '46',
-        answerD: '9',
-        correct: 'answerA'
-    },
-]
+const questions = []
 let questionBox = document.getElementsByClassName('questionBox')[0];
 let n = 0
 let answeredQuestions = []
 let score = 0
 let interval
+let userAnswer = ''
 
 function main() {
+    $.ajax({
+        url: 'https://opentdb.com/api.php?amount=15&type=multiple&category=9',
+        method: 'GET'
+    }).then(function (response) {
+        for (i = 0; i < response.results.length; i++) {
+            let answers = []
+            answers.push(response.results[i].correct_answer);
+            answers.push(response.results[i].incorrect_answers[0]);
+            answers.push(response.results[i].incorrect_answers[1]);
+            answers.push(response.results[i].incorrect_answers[2]);
+            shuffle(answers)
+            console.log(answers)
+            questions.push(
+                {
+                    question: `${response.results[i].question}`,
+                    "answerA": `${answers[0]}`,
+                    "answerB": `${answers[1]}`,
+                    "answerC": `${answers[2]}`,
+                    "answerD": `${answers[3]}`,
+                    "correct": `${response.results[i].correct_answer}`,
+                })
+        }
+    })
     createStartScreen();
     $('#start').click(startGame);
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
 
 function startGame() {
@@ -59,7 +49,7 @@ function startGame() {
         answeredQuestions.push(n)
         createQuestion(questions[n]);
         $('#submit').click(evaluateAnswer);
-        interval = setTimeout(evaluateAnswer, 8000);
+        interval = setTimeout(evaluateAnswer, 10000);
     } else if (questions.length === answeredQuestions.length) {
         scorePage()
     } else {
@@ -88,6 +78,12 @@ function createQuestion(question) {
                             <input type="radio" id="answerA" name="answer" class="custom-control-input">
                             <label class="custom-control-label" for="answerA">${question.answerA}</label>
                         </div>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-6">
                         <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" id="answerB" name="answer" class="custom-control-input">
                             <label class="custom-control-label" for="answerB">${question.answerB}</label>
@@ -102,6 +98,10 @@ function createQuestion(question) {
                             <input type="radio" id="answerC" name="answer" class="custom-control-input">
                             <label class="custom-control-label" for="answerC">${question.answerC}</label>
                         </div>
+                        </div>
+                        <div class="col-3"></div>
+                        <div class="col-3"></div>
+                    <div class="col-6">
                         <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" id="answerD" name="answer" class="custom-control-input">
                             <label class="custom-control-label" for="answerD">${question.answerD}</label>
@@ -126,8 +126,8 @@ function createStartScreen() {
                         Instructions:
                     </h3>
                     <p>
-                        You will have 8 seconds to answer each question!
-                        If you do not answer in the time allotted, the question is counted
+                        You will have 10 seconds to answer each question!
+                        If you do not answer in the time allotted, the question is counted as
                         wrong!
                     </p>
                     <button type="button" id='start' class="btn btn-primary btn-lg start">Start</button>
@@ -141,10 +141,10 @@ function createStartScreen() {
 
 function evaluateAnswer() {
     clearInterval(interval);
-    const userAnswer = $('input[name=answer]:checked').attr('id');
+    interval = setTimeout(startGame, 5000);
+    userAnswer = $('input[name=answer]:checked').attr('id');
     console.log(userAnswer)
-    interval = setTimeout(startGame, 3000);
-    if (userAnswer === questions[n].correct) {
+    if (questions[n][userAnswer] === questions[n].correct) {
         correctAnswer();
     } else {
         wrongAnswer();
@@ -200,6 +200,9 @@ function wrongAnswer() {
                         Wrong Answer :(
                     </h3>
                     <p>
+                        The correct answer was <strong>${questions[n].correct}</strong>.
+                    </p>
+                    <p>
                         Let's see how you did!
                     </p>
                 </div>
@@ -213,6 +216,9 @@ function wrongAnswer() {
                     <h3>
                         Wrong Answer :(
                     </h3>
+                    <p>
+                    The correct answer was <strong>${questions[n].correct}</strong>.
+                    </p>
                     <p>
                         Get ready for your next try!
                     </p>
